@@ -18,7 +18,6 @@ const App = () => {
   const [isNeedShowModal, setIsNeedShowModal] = useState(false);
   const [largeImage, setLargeImage] = useState('');
   const [isLoadMore, setIsLoadMore] = useState(true);
-  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -45,7 +44,7 @@ const App = () => {
           setIsLoadMore(false);
         }
       } catch (error) {
-        setError(toast.error(error.message, notifications));
+        toast.error(error.message, notifications);
       } finally {
         setIsLoading(false);
       }
@@ -58,7 +57,6 @@ const App = () => {
     setQuery(query);
     setPage(1);
     setImages([]);
-    setError(null);
   };
 
   const openModal = (image) => {
@@ -78,11 +76,15 @@ const App = () => {
 
   return (
     <>
-      <SearchBar onSubmit={handleSearch} query={query} setQuery={setQuery} />
+      <SearchBar onSubmit={handleSearch} />
       {isLoading && <Loader />}
       <ImageGallery images={images} openModal={openModal} />
       {isNeedShowModal && (
-        <Modal largeImage={largeImage} onClose={closeModal} images={images} />
+        <Modal
+          largeImage={largeImage}
+          onClose={closeModal}
+          images={images}
+        />
       )}
       {images.length > 0 && isLoadMore && (
         <Button images={images} onClick={handleLoadMore} />
