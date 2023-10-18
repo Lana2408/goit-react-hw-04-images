@@ -65,7 +65,7 @@ const App = () => {
     };
 
     fetchData();
-  }, [query, page]);
+  }, [query, page, setError]);
 
   const handleSearch = query => {
     setQuery(query);
