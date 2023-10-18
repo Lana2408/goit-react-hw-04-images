@@ -30,7 +30,7 @@ const App = () => {
   const [isNeedShowModal, setIsNeedShowModal] = useState(false);
   const [largeImage, setLargeImage] = useState('');
   const [isLoadMore, setIsLoadMore] = useState(true);
-  const [error, setError] = useState(null); 
+  const [setError] = useState(null); 
 
 
   useEffect(() => {
