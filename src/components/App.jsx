@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useState,useEffect } from 'react';
 import { fetchImages } from './service/api-pixabay';
 
 import SearchBar from './Searchbar/Searchbar';
@@ -11,104 +11,106 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 
-export class App extends Component {
-  state = {
-    images: [],
-    query: '',
-    page: 1,
-    isLoading: false,
-    isNeedShowModal: false,
-    largeImage: '',
-    isLoadMore: true,
-    error: null,
-  };
+const App = () => {
+  // state = {
+  //   images: [],
+  //   query: '',
+  //   page: 1,
+  //   isLoading: false,
+  //   isNeedShowModal: false,
+  //   largeImage: '',
+  //   isLoadMore: true,
+  //   error: null,
+  // };
+
+  const [images, setImages] = useState([]);
+  const [query, setQuery] = useState('');
+  const [page, setPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isNeedShowModal, setIsNeedShowModal] = useState(false);
+  const [largeImage, setLargeImage] = useState('');
+  const [isLoadMore, setIsLoadMore] = useState(true);
+  const [error, setError] = useState(null); 
 
 
-  async componentDidUpdate(_, prevState) {
-    const { page, query } = this.state;
-    const perPage = 12;
+  useEffect(() => {
+    const fetchData = async () => {
+      const perPage = 12;
+      if (query.trim() === '') {
+        return;
+      }
 
-    if (prevState.query !== query || prevState.page !== page) {
       try {
-        this.setState({ isLoading: true, isLoadMore: false });
+        setIsLoading(true);
+        setIsLoadMore(false);
+
         const fetchedImages = await fetchImages(query, page, perPage);
         const result = fetchedImages.hits;
 
-        this.setState(prevState => {
-          return {
-            images: [...prevState.images, ...result],
-            isLoadMore: true,
-          };
-        });
-
-        if (fetchedImages.totalHits < perPage * page && page !== 1) {
-          this.setState({ isLoadMore: false });
-        }
-
-        if (result.length < perPage && page === 1) {
-          this.setState({ isLoadMore: false });
-        }
+        setImages((prevImages) => [...prevImages, ...result]);
+        setIsLoadMore(fetchedImages.totalHits >= perPage * page);
 
         if (result.length === 0 && page === 1) {
           toast.warn(
             'Sorry, there are no images matching your search query. Please try again.',
             notifications
           );
-          this.setState({ isLoadMore: false });
+          setIsLoadMore(false);
         }
       } catch (error) {
-        this.setState({
-          error: toast.error(error.message, notifications),
-        });
+        setError(toast.error(error.message, notifications));
       } finally {
-        this.setState({ isLoading: false });
+        setIsLoading(false);
       }
-    }
-  }
+    };
 
-  handleSearch = query => {
-    this.setState({ query, page: 1, images: [] });
+    fetchData();
+  }, [query, page]);
+
+  const handleSearch = query => {
+    setQuery(query);
+    setPage(1);
+    setImages([]);
+    setError(null);
   };
 
-  openModal = image => {
-    this.setState(() => ({
-      isNeedShowModal: true,
-      largeImage: image,
-    }));
+  const openModal = image => {
+    setIsNeedShowModal(true);
+    setLargeImage(image);
   };
 
-  closeModal = () => {
-    this.setState({ isNeedShowModal: false, largeImage: '' });
+  const closeModal = () => {
+    setPage((prevPage) => prevPage + 1);
+    setIsLoadMore(false);
   };
 
-  handleLoadMore = () => {
-    this.setState(prevState => ({
-      page: prevState.page + 1,
-      isLoadMore: false,
-    }));
+  const handleLoadMore = () => {
+    setPage((prevPage) => prevPage + 1);
+    setIsLoadMore(false);
   };
 
-  render() {
-    const { images, largeImage, isLoading, isLoadMore, isNeedShowModal } =
-      this.state;
+
+
 
     return (
       <>
-        <SearchBar onSubmit={this.handleSearch} />
+        <SearchBar onSubmit={handleSearch} />
         {isLoading && <Loader />}
-        <ImageGallery images={images} openModal={this.openModal} />
+        <ImageGallery images={images} openModal={openModal} />
         {isNeedShowModal && (
           <Modal
             largeImage={largeImage}
-            onClose={this.closeModal}
+            onClose={closeModal}
             images={images}
           />
         )}
         {images.length > 0 && isLoadMore && (
-          <Button images={images} onClick={this.handleLoadMore} />
+          <Button images={images} onClick={handleLoadMore} />
         )}
         <ToastContainer />
       </>
     );
-  }
+  
 }
+
+export default App;
