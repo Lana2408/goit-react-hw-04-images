@@ -1,4 +1,4 @@
-import { useState,useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { fetchImages } from './service/api-pixabay';
 
 import SearchBar from './Searchbar/Searchbar';
@@ -10,19 +10,7 @@ import { notifications } from './notifications/notifications';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-
 const App = () => {
-  // state = {
-  //   images: [],
-  //   query: '',
-  //   page: 1,
-  //   isLoading: false,
-  //   isNeedShowModal: false,
-  //   largeImage: '',
-  //   isLoadMore: true,
-  //   error: null,
-  // };
-
   const [images, setImages] = useState([]);
   const [query, setQuery] = useState('');
   const [page, setPage] = useState(1);
@@ -30,8 +18,7 @@ const App = () => {
   const [isNeedShowModal, setIsNeedShowModal] = useState(false);
   const [largeImage, setLargeImage] = useState('');
   const [isLoadMore, setIsLoadMore] = useState(true);
-  const [setError] = useState(null); 
-
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -65,16 +52,16 @@ const App = () => {
     };
 
     fetchData();
-  }, [query, page, setError]);
+  }, [query, page]);
 
-  const handleSearch = query => {
+  const handleSearch = (query) => {
     setQuery(query);
     setPage(1);
     setImages([]);
     setError(null);
   };
 
-  const openModal = image => {
+  const openModal = (image) => {
     setIsNeedShowModal(true);
     setLargeImage(image);
   };
@@ -89,28 +76,20 @@ const App = () => {
     setIsLoadMore(false);
   };
 
-
-
-
-    return (
-      <>
-        <SearchBar onSubmit={handleSearch} />
-        {isLoading && <Loader />}
-        <ImageGallery images={images} openModal={openModal} />
-        {isNeedShowModal && (
-          <Modal
-            largeImage={largeImage}
-            onClose={closeModal}
-            images={images}
-          />
-        )}
-        {images.length > 0 && isLoadMore && (
-          <Button images={images} onClick={handleLoadMore} />
-        )}
-        <ToastContainer />
-      </>
-    );
-  
-}
+  return (
+    <>
+      <SearchBar onSubmit={handleSearch} query={query} setQuery={setQuery} />
+      {isLoading && <Loader />}
+      <ImageGallery images={images} openModal={openModal} />
+      {isNeedShowModal && (
+        <Modal largeImage={largeImage} onClose={closeModal} images={images} />
+      )}
+      {images.length > 0 && isLoadMore && (
+        <Button images={images} onClick={handleLoadMore} />
+      )}
+      <ToastContainer />
+    </>
+  );
+};
 
 export default App;
