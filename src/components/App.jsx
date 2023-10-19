@@ -62,7 +62,7 @@ const App = () => {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [query, page]);
+  }, [query, page, handleKeyDown]);
 
   const handleSearch = (query) => {
     setQuery(query);
