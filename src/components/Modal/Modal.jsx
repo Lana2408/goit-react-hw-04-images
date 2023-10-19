@@ -16,13 +16,11 @@ const Modal = ({ largeImage, images, onClose }) => {
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('click', handleOverlayClick);
 
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
-      window.removeEventListener('click', handleOverlayClick);
     };
-  }, [handleKeyDown, handleOverlayClick, onClose]);
+  }, []);
 
   return (
     <Overlay onClick={handleOverlayClick}>
