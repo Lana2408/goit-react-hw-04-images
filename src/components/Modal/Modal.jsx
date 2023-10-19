@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Overlay, ModalContent } from './Modal.styled';
 
 const Modal = ({ largeImage, images, onClose }) => {
@@ -22,17 +22,7 @@ const Modal = ({ largeImage, images, onClose }) => {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('click', handleOverlayClick);
     };
-  }, [onClose]);
-
-  // Відслідковуємо стан відкриття модалки і видаляємо обробник подій при закритті
-  useEffect(() => {
-    if (onClose) {
-      return () => {
-        window.removeEventListener('keydown', handleKeyDown);
-        window.removeEventListener('click', handleOverlayClick);
-      };
-    }
-  }, [onClose]);
+  }, [handleKeyDown, handleOverlayClick, onClose]);
 
   return (
     <Overlay onClick={handleOverlayClick}>
