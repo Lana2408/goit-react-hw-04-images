@@ -18,13 +18,13 @@ const App = () => {
   const [largeImage, setLargeImage] = useState('');
   const [isLoadMore, setIsLoadMore] = useState(true);
 
-  const handleKeyDown = (event) => {
-    if (event.code === 'Escape') {
-      closeModal();
-    }
-  };
-
   useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.code === 'Escape') {
+        closeModal();
+      }
+    };
+
     const fetchData = async () => {
       const perPage = 12;
       if (query.trim() === '') {
@@ -62,7 +62,7 @@ const App = () => {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [query, page, handleKeyDown]);
+  }, [query, page]);
 
   const handleSearch = (query) => {
     setQuery(query);
@@ -77,7 +77,7 @@ const App = () => {
 
   const closeModal = () => {
     setIsNeedShowModal(false);
-    setLargeImage(''); 
+    setLargeImage('');
   };
 
   const handleLoadMore = () => {
@@ -90,11 +90,7 @@ const App = () => {
       {isLoading && <Loader />}
       <ImageGallery images={images} openModal={openModal} />
       {isNeedShowModal && (
-        <Modal
-          largeImage={largeImage}
-          images={images}
-          onClose={closeModal}
-        />
+        <Modal largeImage={largeImage} images={images} onClose={closeModal} />
       )}
       {images.length > 0 && isLoadMore && (
         <Button images={images} onClick={handleLoadMore} />
