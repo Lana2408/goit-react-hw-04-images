@@ -1,6 +1,5 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { fetchImages } from './service/api-pixabay';
-
 import SearchBar from './Searchbar/Searchbar';
 import { ImageGallery } from './ImageGallery/ImageGallery';
 import Modal from './Modal/Modal';
@@ -18,6 +17,12 @@ const App = () => {
   const [isNeedShowModal, setIsNeedShowModal] = useState(false);
   const [largeImage, setLargeImage] = useState('');
   const [isLoadMore, setIsLoadMore] = useState(true);
+
+  const handleKeyDown = (event) => {
+    if (event.code === 'Escape') {
+      closeModal();
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -51,6 +56,12 @@ const App = () => {
     };
 
     fetchData();
+
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
   }, [query, page]);
 
   const handleSearch = (query) => {
@@ -65,13 +76,12 @@ const App = () => {
   };
 
   const closeModal = () => {
-    setPage((prevPage) => prevPage + 1);
-    setIsLoadMore(false);
+    setIsNeedShowModal(false);
+    setLargeImage(''); 
   };
 
   const handleLoadMore = () => {
     setPage((prevPage) => prevPage + 1);
-    setIsLoadMore(false);
   };
 
   return (
@@ -82,8 +92,8 @@ const App = () => {
       {isNeedShowModal && (
         <Modal
           largeImage={largeImage}
-          onClose={closeModal}
           images={images}
+          onClose={closeModal}
         />
       )}
       {images.length > 0 && isLoadMore && (
